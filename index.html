@@ -13,56 +13,42 @@
 body{margin:0;background:#000;color:#fff;font-family:Arial;text-align:center}
 
 /* HEADER */
-.header{padding:20px 10px}
-.logo{width:70px;display:block;margin:auto}
-.title{font-size:24px;color:gold;font-weight:bold}
+.header{padding:25px 10px}
+.logo{width:80px;margin:auto;display:block}
+.title{font-size:24px;color:gold;font-weight:bold;margin-top:6px}
 
 /* BUTTON */
 .btn{
-background:gold;border:none;padding:12px 20px;border-radius:8px;
-font-weight:bold;font-size:15px;cursor:pointer;margin:10px auto;
-display:flex;align-items:center;justify-content:center;gap:6px;
+background:gold;border:none;padding:14px 22px;border-radius:10px;
+font-weight:bold;font-size:15px;cursor:pointer;margin:12px auto;
+display:flex;align-items:center;justify-content:center;gap:8px;
 min-width:220px;color:#000;
 }
 
-/* 🔒 FINAL FIX — input always black */
-input,
-input:focus,
-input:active{
-background:#000 !important;
-color:#fff !important;
-border:1px solid #333 !important;
-}
-
-/* stake popup cards */
-.card{
-background:#111 !important;
-}
-
-/* stake amount box */
-#stakeBox input{
-background:#000 !important;
-color:#fff !important;
-}
-  
 /* GRID */
 .grid{
 display:grid;grid-template-columns:1fr 1fr;
-gap:14px;width:92%;max-width:520px;margin:20px auto;
+gap:14px;width:92%;max-width:560px;margin:20px auto;
 }
 
 .box{
-background:#111;padding:16px;border-radius:12px;
+background:#111;padding:18px;border-radius:12px;
 border:1px solid #222;text-align:center;
 }
-
 .box i{color:gold;font-size:18px}
 .value{color:gold;font-size:20px;font-weight:bold;margin-top:6px}
 
 /* CARD */
 .card{
-background:#111;padding:18px;border-radius:14px;
-margin:14px auto;width:92%;max-width:480px;
+background:#111;padding:20px;border-radius:14px;
+margin:16px auto;width:92%;max-width:520px;
+}
+
+/* INPUT */
+input{
+padding:16px;width:92%;margin:14px auto;background:#000;color:#fff;
+border:1px solid #333;border-radius:10px;font-size:16px;
+max-width:420px;display:block;
 }
 
 /* POPUP */
@@ -136,7 +122,7 @@ border-top:1px solid #222;text-align:center;
 
 </div>
 
-<!-- STAKE -->
+<!-- STAKE BUTTON -->
 <button class="btn" onclick="toggleStake()">
 <i class="fa-solid fa-lock"></i> Stake
 </button>
@@ -193,7 +179,7 @@ border-top:1px solid #222;text-align:center;
 </div>
 </div>
 
-<!-- POPUPS -->
+<!-- DOWNLINE POPUP -->
 <div class="popup" id="downlinePopup">
 <div class="popupBox">
 <h3>20 Level Downline</h3>
@@ -202,6 +188,7 @@ border-top:1px solid #222;text-align:center;
 </div>
 </div>
 
+<!-- HISTORY POPUP -->
 <div class="popup" id="historyPopup">
 <div class="popupBox">
 <h3>Claim History</h3>
@@ -218,10 +205,8 @@ border-top:1px solid #222;text-align:center;
 <script>
 
 let provider, signer;
-
-// 🔴 CHANGE LATER ONLY
-const STAKING_ADDRESS="0x0000000000000000000000000000000000000000";
-const DX_TOKEN="0x0000000000000000000000000000000000000000";
+const STAKING_ADDRESS = "0x0000000000000000000000000000000000000000";
+const DX_TOKEN = "0x0000000000000000000000000000000000000000";  
 const ADMIN="0x53ba2d865be750d0e2d4d01bcb0a46ec1684c46b";
 
 function toggleStake(){
@@ -236,14 +221,10 @@ alert("Copied");
 
 function openDownline(){
 document.getElementById("downlinePopup").style.display="flex";
-
 let html="";
 for(let i=1;i<=20;i++){
-html+=`
-<div style="display:flex;justify-content:space-between;background:#000;padding:10px;margin:6px;border-radius:8px;border:1px solid #222;">
-<span>Level ${i}</span>
-<span>0</span>
-</div>`;
+html+=`<div style="display:flex;justify-content:space-between;background:#000;padding:10px;margin:6px;border-radius:8px;border:1px solid #222;">
+<span>Level ${i}</span><span>0</span></div>`;
 }
 document.getElementById("downlineData").innerHTML=html;
 }
@@ -289,13 +270,12 @@ window.location.origin+"?ref="+addr;
 
 document.getElementById("status").innerHTML="Wallet Connected";
 
-// ADMIN CHECK
 if(addr.toLowerCase()==ADMIN.toLowerCase()){
 document.getElementById("adminPanel").style.display="block";
 }
 
 loadData();
-setInterval(loadData,10000);
+setInterval(loadData,8000);
 
 }catch(e){
 alert("Wallet failed");
@@ -313,7 +293,13 @@ document.getElementById("teamCount").innerHTML=Math.floor(Math.random()*20);
 document.getElementById("claimAmount").innerHTML=Math.floor(Math.random()*80);
 }
 
+function approveUSDT(){alert("USDT Approved")}
+function stakeUSDT(){alert("USDT Staked")}
+function approveDX(){alert("DMX Approved")}
+function stakeDX(){alert("DMX Staked")}
+function claim(){alert("Claim Sent")}
+
 </script>
 
 </body>
-</html>
+  </html>
