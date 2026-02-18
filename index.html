@@ -5,12 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DimeX Dashboard</title>
 
-<!-- Ethers -->
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
-
-<!-- WalletConnect -->
 <script src="https://unpkg.com/@walletconnect/ethereum-provider@2.11.0/dist/index.umd.js"></script>
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
@@ -23,7 +19,7 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;text-align:center}
 background:gold;border:none;padding:14px 22px;border-radius:10px;
 font-weight:bold;font-size:15px;cursor:pointer;margin:12px auto;
 display:flex;align-items:center;justify-content:center;gap:8px;
-min-width:230px;color:#000;
+min-width:220px;color:#000;
 }
 
 .grid{
@@ -66,6 +62,11 @@ border-top:1px solid #222;text-align:center;
 }
 .footLogo{color:gold;font-size:22px;font-weight:bold}
 .footCopy{color:#777;font-size:14px;margin-top:6px}
+
+@media(min-width:900px){
+.grid{grid-template-columns:1fr 1fr 1fr;max-width:900px}
+.btn{min-width:260px}
+}
 </style>
 </head>
 
@@ -76,7 +77,7 @@ border-top:1px solid #222;text-align:center;
 <div class="title">DimeX Dashboard</div>
 </div>
 
-<button class="btn" onclick="connect()">
+<button class="btn" onclick="connectWallet()">
 <i class="fa-solid fa-wallet"></i> Connect Wallet
 </button>
 
@@ -84,7 +85,6 @@ border-top:1px solid #222;text-align:center;
 <div id="status" style="color:gold"></div>
 
 <div class="grid">
-
 <div class="box"><i class="fa-solid fa-coins"></i>
 <div>Total Stake</div>
 <div id="totalStake" class="value">0</div></div>
@@ -108,7 +108,6 @@ border-top:1px solid #222;text-align:center;
 <div class="box"><i class="fa-solid fa-users"></i>
 <div>Team Count</div>
 <div id="teamCount" class="value">0</div></div>
-
 </div>
 
 <button class="btn" onclick="toggleStake()">
@@ -120,15 +119,15 @@ border-top:1px solid #222;text-align:center;
 <div class="card">
 <h3>USDT Stake</h3>
 <input id="usdtAmount" placeholder="Amount">
-<button class="btn" onclick="approveUSDT()">Approve</button>
-<button class="btn" onclick="stakeUSDT()">Stake</button>
+<button class="btn" onclick="alert('Approve demo')">Approve</button>
+<button class="btn" onclick="alert('Stake demo')">Stake</button>
 </div>
 
 <div class="card">
 <h3>DMX Stake</h3>
 <input id="dxAmount" placeholder="Amount">
-<button class="btn" onclick="approveDX()">Approve</button>
-<button class="btn" onclick="stakeDX()">Stake</button>
+<button class="btn" onclick="alert('Approve demo')">Approve</button>
+<button class="btn" onclick="alert('Stake demo')">Stake</button>
 </div>
 
 </div>
@@ -136,7 +135,7 @@ border-top:1px solid #222;text-align:center;
 <div class="card">
 <h3><i class="fa-solid fa-gift"></i> Claim</h3>
 <div id="claimAmount" class="value">0</div>
-<button class="btn" onclick="claim()">Claim</button>
+<button class="btn" onclick="alert('Claim demo')">Claim</button>
 </div>
 
 <div class="card">
@@ -153,6 +152,15 @@ border-top:1px solid #222;text-align:center;
 <i class="fa-solid fa-clock"></i> Claim History
 </button>
 
+<div id="adminPanel" style="display:none">
+<div class="card">
+<h3>Admin Panel</h3>
+<button class="btn">Total Users</button>
+<button class="btn">Total Staked</button>
+<button class="btn">Reward Pool</button>
+</div>
+</div>
+
 <div class="popup" id="downlinePopup">
 <div class="popupBox">
 <h3>20 Level Downline</h3>
@@ -164,7 +172,7 @@ border-top:1px solid #222;text-align:center;
 <div class="popup" id="historyPopup">
 <div class="popupBox">
 <h3>Claim History</h3>
-<div id="historyData">No history</div>
+<div>No history</div>
 <button class="btn" onclick="closePopup()">Close</button>
 </div>
 </div>
@@ -177,7 +185,6 @@ border-top:1px solid #222;text-align:center;
 <script>
 
 let provider, signer;
-
 const ADMIN="0x53ba2d865be750d0e2d4d01bcb0a46ec1684c46b";
 
 function toggleStake(){
@@ -209,22 +216,16 @@ document.getElementById("downlinePopup").style.display="none";
 document.getElementById("historyPopup").style.display="none";
 }
 
-async function connect(){
-
+async function connectWallet(){
 try{
 
 document.getElementById("status").innerHTML="Connecting wallet...";
 
-// wait injection
-await new Promise(r=>setTimeout(r,800));
-
-let providerInstance;
-
 if(window.ethereum){
-providerInstance=new ethers.providers.Web3Provider(window.ethereum,"any");
-await providerInstance.send("eth_requestAccounts",[]);
+provider=new ethers.providers.Web3Provider(window.ethereum,"any");
+await provider.send("eth_requestAccounts",[]);
 }else{
-const wc = await window.EthereumProvider.init({
+const wc=await window.EthereumProvider.init({
 projectId:"62a73933d62534edcd2f54b8a06c4319",
 chains:[56],
 showQrModal:true,
@@ -232,19 +233,11 @@ metadata:{name:"DimeX",url:window.location.origin,
 icons:["https://i.ibb.co/zVB8fHMD/logo.png"]}
 });
 await wc.enable();
-providerInstance=new ethers.providers.Web3Provider(wc);
+provider=new ethers.providers.Web3Provider(wc,"any");
 }
 
-provider=providerInstance;
 signer=provider.getSigner();
-
-const net = await provider.getNetwork();
-if(net.chainId !== 56){
-alert("Switch to BNB Smart Chain");
-return;
-}
-
-let addr = await signer.getAddress();
+let addr=await signer.getAddress();
 
 document.getElementById("wallet").innerHTML="Wallet: "+addr;
 document.getElementById("status").innerHTML="Wallet Connected";
@@ -253,7 +246,7 @@ document.getElementById("refInput").value=
 window.location.origin+"?ref="+addr;
 
 if(addr.toLowerCase()==ADMIN.toLowerCase()){
-console.log("Admin login");
+document.getElementById("adminPanel").style.display="block";
 }
 
 loadData();
@@ -263,10 +256,9 @@ setInterval(loadData,8000);
 console.log(e);
 alert("Wallet connect failed");
 }
-
 }
 
-async function loadData(){
+function loadData(){
 document.getElementById("totalStake").innerHTML=Math.floor(Math.random()*1000);
 document.getElementById("dailyReward").innerHTML=Math.floor(Math.random()*50);
 document.getElementById("directIncome").innerHTML=Math.floor(Math.random()*200);
@@ -276,13 +268,7 @@ document.getElementById("teamCount").innerHTML=Math.floor(Math.random()*20);
 document.getElementById("claimAmount").innerHTML=Math.floor(Math.random()*80);
 }
 
-function approveUSDT(){alert("USDT Approved")}
-function stakeUSDT(){alert("USDT Staked")}
-function approveDX(){alert("DMX Approved")}
-function stakeDX(){alert("DMX Staked")}
-function claim(){alert("Claim Sent")}
-
 </script>
 
 </body>
-                   </html>
+  </html>
