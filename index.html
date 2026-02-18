@@ -5,21 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DimeX Dashboard</title>
 
+<!-- Ethers -->
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+
+<!-- WalletConnect -->
+<script src="https://unpkg.com/@walletconnect/ethereum-provider@2.11.0/dist/index.umd.js"></script>
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
 body{margin:0;background:#000;color:#fff;font-family:Arial;text-align:center}
-
 .header{padding:25px 10px}
 .logo{width:80px;margin:auto;display:block}
 .title{font-size:24px;color:gold;font-weight:bold;margin-top:6px}
 
 .btn{
-background:gold;border:none;padding:14px 24px;border-radius:10px;
+background:gold;border:none;padding:14px 22px;border-radius:10px;
 font-weight:bold;font-size:15px;cursor:pointer;margin:12px auto;
 display:flex;align-items:center;justify-content:center;gap:8px;
-min-width:220px;color:#000;
+min-width:230px;color:#000;
 }
 
 .grid{
@@ -62,11 +66,6 @@ border-top:1px solid #222;text-align:center;
 }
 .footLogo{color:gold;font-size:22px;font-weight:bold}
 .footCopy{color:#777;font-size:14px;margin-top:6px}
-
-@media(min-width:900px){
-.grid{grid-template-columns:1fr 1fr 1fr;max-width:900px}
-.btn{min-width:260px}
-}
 </style>
 </head>
 
@@ -84,7 +83,6 @@ border-top:1px solid #222;text-align:center;
 <div id="wallet"></div>
 <div id="status" style="color:gold"></div>
 
-<!-- INCOME -->
 <div class="grid">
 
 <div class="box"><i class="fa-solid fa-coins"></i>
@@ -113,7 +111,6 @@ border-top:1px solid #222;text-align:center;
 
 </div>
 
-<!-- STAKE -->
 <button class="btn" onclick="toggleStake()">
 <i class="fa-solid fa-lock"></i> Stake
 </button>
@@ -136,34 +133,26 @@ border-top:1px solid #222;text-align:center;
 
 </div>
 
-<!-- CLAIM -->
 <div class="card">
 <h3><i class="fa-solid fa-gift"></i> Claim</h3>
 <div id="claimAmount" class="value">0</div>
 <button class="btn" onclick="claim()">Claim</button>
 </div>
 
-<!-- REF -->
 <div class="card">
 <h3><i class="fa-solid fa-link"></i> Referral Link</h3>
 <input id="refInput" readonly>
 <button class="btn" onclick="copyRef()">Copy</button>
 </div>
 
-<button class="btn" onclick="openDownline()">View Downline</button>
-<button class="btn" onclick="openHistory()">Claim History</button>
+<button class="btn" onclick="openDownline()">
+<i class="fa-solid fa-sitemap"></i> View Downline
+</button>
 
-<!-- ADMIN -->
-<div id="adminPanel" style="display:none">
-<div class="card">
-<h3>Admin Panel</h3>
-<button class="btn">Total Users</button>
-<button class="btn">Total Staked</button>
-<button class="btn">Reward Pool</button>
-</div>
-</div>
+<button class="btn" onclick="openHistory()">
+<i class="fa-solid fa-clock"></i> Claim History
+</button>
 
-<!-- DOWNLINE -->
 <div class="popup" id="downlinePopup">
 <div class="popupBox">
 <h3>20 Level Downline</h3>
@@ -172,11 +161,10 @@ border-top:1px solid #222;text-align:center;
 </div>
 </div>
 
-<!-- HISTORY -->
 <div class="popup" id="historyPopup">
 <div class="popupBox">
 <h3>Claim History</h3>
-<div>No history</div>
+<div id="historyData">No history</div>
 <button class="btn" onclick="closePopup()">Close</button>
 </div>
 </div>
@@ -190,9 +178,6 @@ border-top:1px solid #222;text-align:center;
 
 let provider, signer;
 
-// 🔴 CHANGE LATER ONLY
-const STAKING_ADDRESS="0x0000000000000000000000000000000000000000";
-const DX_TOKEN="0x0000000000000000000000000000000000000000";
 const ADMIN="0x53ba2d865be750d0e2d4d01bcb0a46ec1684c46b";
 
 function toggleStake(){
@@ -230,22 +215,37 @@ try{
 
 document.getElementById("status").innerHTML="Connecting wallet...";
 
-if(!window.ethereum){
-alert("Open inside MetaMask or Trust Wallet browser");
-return;
+// wait injection
+await new Promise(r=>setTimeout(r,800));
+
+let providerInstance;
+
+if(window.ethereum){
+providerInstance=new ethers.providers.Web3Provider(window.ethereum,"any");
+await providerInstance.send("eth_requestAccounts",[]);
+}else{
+const wc = await window.EthereumProvider.init({
+projectId:"62a73933d62534edcd2f54b8a06c4319",
+chains:[56],
+showQrModal:true,
+metadata:{name:"DimeX",url:window.location.origin,
+icons:["https://i.ibb.co/zVB8fHMD/logo.png"]}
+});
+await wc.enable();
+providerInstance=new ethers.providers.Web3Provider(wc);
 }
 
-provider=new ethers.providers.Web3Provider(window.ethereum);
-await provider.send("eth_requestAccounts",[]);
+provider=providerInstance;
 signer=provider.getSigner();
 
-const net=await provider.getNetwork();
-if(net.chainId!==56){
-alert("Switch wallet to BNB Smart Chain");
+const net = await provider.getNetwork();
+if(net.chainId !== 56){
+alert("Switch to BNB Smart Chain");
 return;
 }
 
-let addr=await signer.getAddress();
+let addr = await signer.getAddress();
+
 document.getElementById("wallet").innerHTML="Wallet: "+addr;
 document.getElementById("status").innerHTML="Wallet Connected";
 
@@ -253,7 +253,7 @@ document.getElementById("refInput").value=
 window.location.origin+"?ref="+addr;
 
 if(addr.toLowerCase()==ADMIN.toLowerCase()){
-document.getElementById("adminPanel").style.display="block";
+console.log("Admin login");
 }
 
 loadData();
@@ -263,6 +263,7 @@ setInterval(loadData,8000);
 console.log(e);
 alert("Wallet connect failed");
 }
+
 }
 
 async function loadData(){
@@ -284,4 +285,4 @@ function claim(){alert("Claim Sent")}
 </script>
 
 </body>
-</html>
+                   </html>
