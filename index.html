@@ -10,9 +10,10 @@
 
 <style>
 body{margin:0;background:#000;color:#fff;font-family:Arial;text-align:center}
+
 .header{padding:25px 10px}
 .logo{width:80px;margin:auto;display:block}
-.title{font-size:24px;color:gold;font-weight:bold}
+.title{font-size:24px;color:gold;font-weight:bold;margin-top:6px}
 
 .btn{
 background:gold;border:none;padding:14px 22px;border-radius:10px;
@@ -92,6 +93,7 @@ border-top:1px solid #222;text-align:center;
 </button>
 
 <div id="stakeBox" style="display:none">
+
 <div class="card">
 <h3>USDT Stake</h3>
 <input id="usdtAmount" placeholder="Amount">
@@ -105,38 +107,44 @@ border-top:1px solid #222;text-align:center;
 <button class="btn" onclick="approveDX()">Approve</button>
 <button class="btn" onclick="stakeDX()">Stake</button>
 </div>
+
 </div>
 
 <div class="card">
-<h3><i class="fa-solid fa-gift"></i> Claim</h3>
+<h3>Claim</h3>
 <div id="claimAmount" class="value">0</div>
 <button class="btn" onclick="claim()">Claim</button>
 </div>
 
-<button class="btn" onclick="openHistory()">
-<i class="fa-solid fa-clock"></i> Claim History
-</button>
-
-<button class="btn" onclick="openDownline()">
-<i class="fa-solid fa-sitemap"></i> View Downline
-</button>
-
-<!-- CLAIM HISTORY -->
-<div class="popup" id="historyPopup">
-<div class="popupBox">
-<h3>Claim History</h3>
-<div id="historyData">
-<div style="padding:10px;border-bottom:1px solid #222">No claim yet</div>
+<div class="card">
+<h3>Referral Link</h3>
+<input id="refInput" readonly>
+<button class="btn" onclick="copyRef()">Copy</button>
 </div>
-<button class="btn" onclick="closePopup()">Close</button>
+
+<button class="btn" onclick="openDownline()">View Downline</button>
+<button class="btn" onclick="openHistory()">Claim History</button>
+
+<div id="adminPanel" style="display:none">
+<div class="card">
+<h3>Admin Panel</h3>
+<button class="btn">Total Users</button>
+<button class="btn">Total Staked</button>
 </div>
 </div>
 
-<!-- DOWNLINE -->
 <div class="popup" id="downlinePopup">
 <div class="popupBox">
 <h3>20 Level Downline</h3>
 <div id="downlineData"></div>
+<button class="btn" onclick="closePopup()">Close</button>
+</div>
+</div>
+
+<div class="popup" id="historyPopup">
+<div class="popupBox">
+<h3>Claim History</h3>
+<div id="historyData">No history</div>
 <button class="btn" onclick="closePopup()">Close</button>
 </div>
 </div>
@@ -149,63 +157,77 @@ border-top:1px solid #222;text-align:center;
 <script>
 
 let provider, signer;
+const ADMIN="0x53ba2d865be750d0e2d4d01bcb0a46ec1684c46b";
+
+function toggleStake(){
+let b=document.getElementById("stakeBox");
+b.style.display=b.style.display=="none"?"block":"none";
+}
+
+function copyRef(){
+navigator.clipboard.writeText(document.getElementById("refInput").value);
+alert("Copied");
+}
+
+function openDownline(){
+document.getElementById("downlinePopup").style.display="flex";
+let html="";
+for(let i=1;i<=20;i++){
+html+=`<div style="display:flex;justify-content:space-between;background:#000;padding:10px;margin:6px;border-radius:8px;border:1px solid #222;">
+<span>Level ${i}</span><span>0</span></div>`;
+}
+document.getElementById("downlineData").innerHTML=html;
+}
+
+function openHistory(){
+document.getElementById("historyPopup").style.display="flex";
+}
+
+function closePopup(){
+document.getElementById("downlinePopup").style.display="none";
+document.getElementById("historyPopup").style.display="none";
+}
 
 async function connect(){
 
 try{
 
-document.getElementById("status").innerHTML="Connecting wallet...";
-
-// wait for wallet injection
-if(typeof window.ethereum === "undefined"){
-alert("Open this page inside MetaMask / Trust Wallet browser");
+if(!window.ethereum){
+alert("Open inside MetaMask or Trust wallet browser");
 return;
 }
 
-// create provider
-provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+provider=new ethers.providers.Web3Provider(window.ethereum,"any");
+await provider.send("eth_requestAccounts",[]);
+signer=provider.getSigner();
 
-// request accounts
-await provider.send("eth_requestAccounts", []);
-
-signer = provider.getSigner();
-
-// check network
-const net = await provider.getNetwork();
-
-if(net.chainId !== 56){
-alert("Please switch to BNB Smart Chain");
+const net=await provider.getNetwork();
+if(net.chainId!==56){
+alert("Switch to BNB Smart Chain");
 return;
 }
 
-// get address
-const addr = await signer.getAddress();
+let addr=await signer.getAddress();
+document.getElementById("wallet").innerHTML="Wallet: "+addr;
+document.getElementById("status").innerHTML="Wallet Connected";
 
-document.getElementById("wallet").innerHTML = "Wallet: " + addr;
-document.getElementById("status").innerHTML = "Wallet Connected";
+document.getElementById("refInput").value=
+window.location.origin+"?ref="+addr;
 
-// referral
-document.getElementById("refInput").value =
-window.location.origin + "?ref=" + addr;
-
-// admin check
-const ADMIN="0x53ba2d865be750d0e2d4d01bcb0a46ec1684c46b";
 if(addr.toLowerCase()==ADMIN.toLowerCase()){
 document.getElementById("adminPanel").style.display="block";
 }
 
-// load demo stats
 loadData();
 setInterval(loadData,8000);
 
-}catch(err){
-console.log(err);
+}catch(e){
+console.log(e);
 alert("Wallet connect failed");
 }
 
 }
 
-// demo data
 function loadData(){
 document.getElementById("totalStake").innerHTML=Math.floor(Math.random()*1000);
 document.getElementById("dailyReward").innerHTML=Math.floor(Math.random()*50);
@@ -216,7 +238,13 @@ document.getElementById("teamCount").innerHTML=Math.floor(Math.random()*20);
 document.getElementById("claimAmount").innerHTML=Math.floor(Math.random()*80);
 }
 
+function approveUSDT(){alert("USDT Approved")}
+function stakeUSDT(){alert("USDT Staked")}
+function approveDX(){alert("DMX Approved")}
+function stakeDX(){alert("DMX Staked")}
+function claim(){alert("Claim Sent")}
+
 </script>
+
 </body>
-</html>
-                                                                             </html>
+  </html>
