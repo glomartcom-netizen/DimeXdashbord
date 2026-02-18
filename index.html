@@ -239,50 +239,53 @@ document.getElementById("historyPopup").style.display="none";
 }
 
 async function connect(){
-
 try{
 
-let providerInstance;
+document.getElementById("status").innerHTML="Connecting wallet...";
 
+// 🟢 METAMASK / TRUST / TOKENPOCKET (all injected wallets)
 if(window.ethereum){
-providerInstance=new ethers.providers.Web3Provider(window.ethereum);
-await providerInstance.send("eth_requestAccounts",[]);
+
+provider = new ethers.providers.Web3Provider(window.ethereum);
+await provider.send("eth_requestAccounts", []);
+
 }else{
-const wc=await window.EthereumProvider.init({
-projectId:"62a73933d62534edcd2f54b8a06c4319",
-chains:[56],
-showQrModal:true,
-metadata:{name:"DimeX",url:window.location.origin,
-icons:["https://i.ibb.co/zVB8fHMD/logo.png"]}
-});
-await wc.enable();
-providerInstance=new ethers.providers.Web3Provider(wc);
+alert("Open in MetaMask or Trust Wallet browser");
+return;
 }
 
-provider=providerInstance;
-signer=provider.getSigner();
+signer = provider.getSigner();
 
-let addr=await signer.getAddress();
+const net = await provider.getNetwork();
+if(net.chainId !== 56){
+alert("Switch to BNB Smart Chain");
+return;
+}
+
+let addr = await signer.getAddress();
+
 document.getElementById("wallet").innerHTML="Wallet: "+addr;
-
-document.getElementById("refInput").value=
-window.location.origin+"?ref="+addr;
-
 document.getElementById("status").innerHTML="Wallet Connected";
 
+// referral
+document.getElementById("refInput").value =
+window.location.origin + "?ref=" + addr;
+
+// admin check
 if(addr.toLowerCase()==ADMIN.toLowerCase()){
 document.getElementById("adminPanel").style.display="block";
 }
 
+// load demo data
 loadData();
 setInterval(loadData,8000);
 
 }catch(e){
-alert("Wallet failed");
+console.log(e);
+alert("Wallet connect failed");
 }
-
 }
-
+  
 async function loadData(){
 document.getElementById("totalStake").innerHTML=Math.floor(Math.random()*1000);
 document.getElementById("dailyReward").innerHTML=Math.floor(Math.random()*50);
