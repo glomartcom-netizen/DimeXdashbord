@@ -6,14 +6,13 @@
 <title>DimeX Dashboard</title>
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
-<script src="https://unpkg.com/@walletconnect/ethereum-provider@2.11.0/dist/index.umd.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
 body{margin:0;background:#000;color:#fff;font-family:Arial;text-align:center}
 .header{padding:25px 10px}
 .logo{width:80px;margin:auto;display:block}
-.title{font-size:24px;color:gold;font-weight:bold;margin-top:6px}
+.title{font-size:24px;color:gold;font-weight:bold}
 
 .btn{
 background:gold;border:none;padding:14px 22px;border-radius:10px;
@@ -62,11 +61,6 @@ border-top:1px solid #222;text-align:center;
 }
 .footLogo{color:gold;font-size:22px;font-weight:bold}
 .footCopy{color:#777;font-size:14px;margin-top:6px}
-
-@media(min-width:900px){
-.grid{grid-template-columns:1fr 1fr 1fr;max-width:900px}
-.btn{min-width:260px}
-}
 </style>
 </head>
 
@@ -77,7 +71,7 @@ border-top:1px solid #222;text-align:center;
 <div class="title">DimeX Dashboard</div>
 </div>
 
-<button class="btn" onclick="connectWallet()">
+<button class="btn" onclick="connect()">
 <i class="fa-solid fa-wallet"></i> Connect Wallet
 </button>
 
@@ -85,29 +79,12 @@ border-top:1px solid #222;text-align:center;
 <div id="status" style="color:gold"></div>
 
 <div class="grid">
-<div class="box"><i class="fa-solid fa-coins"></i>
-<div>Total Stake</div>
-<div id="totalStake" class="value">0</div></div>
-
-<div class="box"><i class="fa-solid fa-bolt"></i>
-<div>Daily Reward</div>
-<div id="dailyReward" class="value">0</div></div>
-
-<div class="box"><i class="fa-solid fa-chart-line"></i>
-<div>Total Income</div>
-<div id="totalIncome" class="value">0</div></div>
-
-<div class="box"><i class="fa-solid fa-user-plus"></i>
-<div>Direct Income</div>
-<div id="directIncome" class="value">0</div></div>
-
-<div class="box"><i class="fa-solid fa-sitemap"></i>
-<div>Level Income</div>
-<div id="levelIncome" class="value">0</div></div>
-
-<div class="box"><i class="fa-solid fa-users"></i>
-<div>Team Count</div>
-<div id="teamCount" class="value">0</div></div>
+<div class="box"><i class="fa-solid fa-coins"></i><div>Total Stake</div><div id="totalStake" class="value">0</div></div>
+<div class="box"><i class="fa-solid fa-bolt"></i><div>Daily Reward</div><div id="dailyReward" class="value">0</div></div>
+<div class="box"><i class="fa-solid fa-chart-line"></i><div>Total Income</div><div id="totalIncome" class="value">0</div></div>
+<div class="box"><i class="fa-solid fa-user-plus"></i><div>Direct Income</div><div id="directIncome" class="value">0</div></div>
+<div class="box"><i class="fa-solid fa-sitemap"></i><div>Level Income</div><div id="levelIncome" class="value">0</div></div>
+<div class="box"><i class="fa-solid fa-users"></i><div>Team Count</div><div id="teamCount" class="value">0</div></div>
 </div>
 
 <button class="btn" onclick="toggleStake()">
@@ -115,64 +92,51 @@ border-top:1px solid #222;text-align:center;
 </button>
 
 <div id="stakeBox" style="display:none">
-
 <div class="card">
 <h3>USDT Stake</h3>
 <input id="usdtAmount" placeholder="Amount">
-<button class="btn" onclick="alert('Approve demo')">Approve</button>
-<button class="btn" onclick="alert('Stake demo')">Stake</button>
+<button class="btn" onclick="approveUSDT()">Approve</button>
+<button class="btn" onclick="stakeUSDT()">Stake</button>
 </div>
 
 <div class="card">
 <h3>DMX Stake</h3>
 <input id="dxAmount" placeholder="Amount">
-<button class="btn" onclick="alert('Approve demo')">Approve</button>
-<button class="btn" onclick="alert('Stake demo')">Stake</button>
+<button class="btn" onclick="approveDX()">Approve</button>
+<button class="btn" onclick="stakeDX()">Stake</button>
 </div>
-
 </div>
 
 <div class="card">
 <h3><i class="fa-solid fa-gift"></i> Claim</h3>
 <div id="claimAmount" class="value">0</div>
-<button class="btn" onclick="alert('Claim demo')">Claim</button>
+<button class="btn" onclick="claim()">Claim</button>
 </div>
-
-<div class="card">
-<h3><i class="fa-solid fa-link"></i> Referral Link</h3>
-<input id="refInput" readonly>
-<button class="btn" onclick="copyRef()">Copy</button>
-</div>
-
-<button class="btn" onclick="openDownline()">
-<i class="fa-solid fa-sitemap"></i> View Downline
-</button>
 
 <button class="btn" onclick="openHistory()">
 <i class="fa-solid fa-clock"></i> Claim History
 </button>
 
-<div id="adminPanel" style="display:none">
-<div class="card">
-<h3>Admin Panel</h3>
-<button class="btn">Total Users</button>
-<button class="btn">Total Staked</button>
-<button class="btn">Reward Pool</button>
-</div>
-</div>
+<button class="btn" onclick="openDownline()">
+<i class="fa-solid fa-sitemap"></i> View Downline
+</button>
 
-<div class="popup" id="downlinePopup">
+<!-- CLAIM HISTORY -->
+<div class="popup" id="historyPopup">
 <div class="popupBox">
-<h3>20 Level Downline</h3>
-<div id="downlineData"></div>
+<h3>Claim History</h3>
+<div id="historyData">
+<div style="padding:10px;border-bottom:1px solid #222">No claim yet</div>
+</div>
 <button class="btn" onclick="closePopup()">Close</button>
 </div>
 </div>
 
-<div class="popup" id="historyPopup">
+<!-- DOWNLINE -->
+<div class="popup" id="downlinePopup">
 <div class="popupBox">
-<h3>Claim History</h3>
-<div>No history</div>
+<h3>20 Level Downline</h3>
+<div id="downlineData"></div>
 <button class="btn" onclick="closePopup()">Close</button>
 </div>
 </div>
@@ -185,20 +149,19 @@ border-top:1px solid #222;text-align:center;
 <script>
 
 let provider, signer;
-const ADMIN="0x53ba2d865be750d0e2d4d01bcb0a46ec1684c46b";
 
 function toggleStake(){
 let b=document.getElementById("stakeBox");
 b.style.display=b.style.display=="none"?"block":"none";
 }
 
-function copyRef(){
-navigator.clipboard.writeText(document.getElementById("refInput").value);
-alert("Copied");
+function openHistory(){
+document.getElementById("historyPopup").style.display="flex";
 }
 
 function openDownline(){
 document.getElementById("downlinePopup").style.display="flex";
+
 let html="";
 for(let i=1;i<=20;i++){
 html+=`<div style="display:flex;justify-content:space-between;background:#000;padding:10px;margin:6px;border-radius:8px;border:1px solid #222;">
@@ -207,58 +170,44 @@ html+=`<div style="display:flex;justify-content:space-between;background:#000;pa
 document.getElementById("downlineData").innerHTML=html;
 }
 
-function openHistory(){
-document.getElementById("historyPopup").style.display="flex";
-}
-
 function closePopup(){
-document.getElementById("downlinePopup").style.display="none";
 document.getElementById("historyPopup").style.display="none";
+document.getElementById("downlinePopup").style.display="none";
 }
 
-async function connectWallet(){
+async function connect(){
+
 try{
 
-document.getElementById("status").innerHTML="Connecting wallet...";
-
-if(window.ethereum){
-provider=new ethers.providers.Web3Provider(window.ethereum,"any");
-await provider.send("eth_requestAccounts",[]);
-}else{
-const wc=await window.EthereumProvider.init({
-projectId:"62a73933d62534edcd2f54b8a06c4319",
-chains:[56],
-showQrModal:true,
-metadata:{name:"DimeX",url:window.location.origin,
-icons:["https://i.ibb.co/zVB8fHMD/logo.png"]}
-});
-await wc.enable();
-provider=new ethers.providers.Web3Provider(wc,"any");
+if(!window.ethereum){
+alert("Open inside MetaMask browser");
+return;
 }
 
-signer=provider.getSigner();
-let addr=await signer.getAddress();
+provider = new ethers.providers.Web3Provider(window.ethereum);
+await provider.send("eth_requestAccounts", []);
+signer = provider.getSigner();
+
+const net = await provider.getNetwork();
+if(net.chainId !== 56){
+alert("Switch to BNB Smart Chain");
+return;
+}
+
+let addr = await signer.getAddress();
 
 document.getElementById("wallet").innerHTML="Wallet: "+addr;
 document.getElementById("status").innerHTML="Wallet Connected";
-
-document.getElementById("refInput").value=
-window.location.origin+"?ref="+addr;
-
-if(addr.toLowerCase()==ADMIN.toLowerCase()){
-document.getElementById("adminPanel").style.display="block";
-}
 
 loadData();
 setInterval(loadData,8000);
 
 }catch(e){
-console.log(e);
 alert("Wallet connect failed");
 }
 }
 
-function loadData(){
+async function loadData(){
 document.getElementById("totalStake").innerHTML=Math.floor(Math.random()*1000);
 document.getElementById("dailyReward").innerHTML=Math.floor(Math.random()*50);
 document.getElementById("directIncome").innerHTML=Math.floor(Math.random()*200);
@@ -268,7 +217,12 @@ document.getElementById("teamCount").innerHTML=Math.floor(Math.random()*20);
 document.getElementById("claimAmount").innerHTML=Math.floor(Math.random()*80);
 }
 
-</script>
+function approveUSDT(){alert("USDT Approved")}
+function stakeUSDT(){alert("USDT Staked")}
+function approveDX(){alert("DMX Approved")}
+function stakeDX(){alert("DMX Staked")}
+function claim(){alert("Claim Sent")}
 
+</script>
 </body>
-  </html>
+                                                                             </html>
