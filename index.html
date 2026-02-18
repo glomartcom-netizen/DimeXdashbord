@@ -248,43 +248,43 @@ try{
 
 document.getElementById("status").innerHTML="Connecting wallet...";
 
-// wallet detect
+// wait metamask inject
+await new Promise(r => setTimeout(r, 1000));
+
 if(!window.ethereum){
-alert("Open inside MetaMask / Trust Wallet browser");
+alert("Open in MetaMask / Trust Wallet browser");
 return;
 }
 
-// provider
 provider = new ethers.providers.Web3Provider(window.ethereum);
 
 // request wallet
-await window.ethereum.request({ method: "eth_requestAccounts" });
+await provider.send("eth_requestAccounts", []);
 
 signer = provider.getSigner();
 
-// network check
 const net = await provider.getNetwork();
 
+// BSC check
 if(net.chainId !== 56){
-alert("Switch to BNB Smart Chain");
+alert("Switch wallet to BNB Smart Chain");
 return;
 }
 
 let addr = await signer.getAddress();
 
-document.getElementById("wallet").innerHTML="Wallet: "+addr;
-document.getElementById("status").innerHTML="Wallet Connected";
+document.getElementById("wallet").innerHTML = "Wallet: " + addr;
+document.getElementById("status").innerHTML = "Wallet Connected";
 
 // referral
 document.getElementById("refInput").value =
-window.location.origin+"?ref="+addr;
+window.location.origin + "?ref=" + addr;
 
-// admin check
-if(addr.toLowerCase()==ADMIN.toLowerCase()){
+// admin panel
+if(addr.toLowerCase() == ADMIN.toLowerCase()){
 document.getElementById("adminPanel").style.display="block";
 }
 
-// demo stats
 loadData();
 setInterval(loadData,8000);
 
