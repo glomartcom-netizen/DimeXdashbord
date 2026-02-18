@@ -15,20 +15,14 @@ body{margin:0;background:#000;color:#fff;font-family:Arial;text-align:center}
 /* HEADER */
 .header{padding:20px 10px}
 .logo{width:70px;display:block;margin:auto}
-.title{font-size:22px;color:gold;font-weight:bold;margin-top:5px}
+.title{font-size:24px;color:gold;font-weight:bold}
 
 /* BUTTON */
 .btn{
 background:gold;border:none;padding:12px 20px;border-radius:8px;
 font-weight:bold;font-size:15px;cursor:pointer;margin:10px auto;
 display:flex;align-items:center;justify-content:center;gap:6px;
-min-width:200px;color:#000;
-}
-
-/* CARD */
-.card{
-background:#111;padding:18px;border-radius:14px;margin:14px auto;
-width:92%;max-width:480px;
+min-width:220px;color:#000;
 }
 
 /* GRID */
@@ -39,15 +33,16 @@ gap:14px;width:92%;max-width:520px;margin:20px auto;
 
 .box{
 background:#111;padding:16px;border-radius:12px;
-text-align:center;border:1px solid #1f1f1f;
+border:1px solid #222;text-align:center;
 }
 
-.box i{color:gold;font-size:18px;margin-bottom:6px}
-.value{color:gold;font-size:20px;margin-top:6px;font-weight:bold}
+.box i{color:gold;font-size:18px}
+.value{color:gold;font-size:20px;font-weight:bold;margin-top:6px}
 
-input{
-padding:14px;width:90%;margin:12px;background:#000;color:#fff;
-border:1px solid #333;border-radius:8px;font-size:16px;
+/* CARD */
+.card{
+background:#111;padding:18px;border-radius:14px;
+margin:14px auto;width:92%;max-width:480px;
 }
 
 /* POPUP */
@@ -57,7 +52,6 @@ background:rgba(0,0,0,0.7);
 display:none;align-items:center;justify-content:center;
 z-index:9999;
 }
-
 .popupBox{
 background:#111;padding:25px;border-radius:14px;
 width:90%;max-width:420px;border:1px solid #222;
@@ -74,9 +68,7 @@ border-top:1px solid #222;text-align:center;
 /* DESKTOP */
 @media(min-width:900px){
 .grid{grid-template-columns:1fr 1fr 1fr;max-width:900px}
-.card{max-width:600px}
 .btn{min-width:260px}
-.title{font-size:26px}
 }
 </style>
 </head>
@@ -95,44 +87,32 @@ border-top:1px solid #222;text-align:center;
 <div id="wallet"></div>
 <div id="status" style="color:gold"></div>
 
-<!-- INCOME BOXES -->
+<!-- INCOME -->
 <div class="grid">
 
-<div class="box">
-<i class="fa-solid fa-coins"></i>
+<div class="box"><i class="fa-solid fa-coins"></i>
 <div>Total Stake</div>
-<div id="totalStake" class="value">0</div>
-</div>
+<div id="totalStake" class="value">0</div></div>
 
-<div class="box">
-<i class="fa-solid fa-bolt"></i>
+<div class="box"><i class="fa-solid fa-bolt"></i>
 <div>Daily Reward</div>
-<div id="dailyReward" class="value">0</div>
-</div>
+<div id="dailyReward" class="value">0</div></div>
 
-<div class="box">
-<i class="fa-solid fa-chart-line"></i>
+<div class="box"><i class="fa-solid fa-chart-line"></i>
 <div>Total Income</div>
-<div id="totalIncome" class="value">0</div>
-</div>
+<div id="totalIncome" class="value">0</div></div>
 
-<div class="box">
-<i class="fa-solid fa-user-plus"></i>
+<div class="box"><i class="fa-solid fa-user-plus"></i>
 <div>Direct Income</div>
-<div id="directIncome" class="value">0</div>
-</div>
+<div id="directIncome" class="value">0</div></div>
 
-<div class="box">
-<i class="fa-solid fa-sitemap"></i>
+<div class="box"><i class="fa-solid fa-sitemap"></i>
 <div>Level Income</div>
-<div id="levelIncome" class="value">0</div>
-</div>
+<div id="levelIncome" class="value">0</div></div>
 
-<div class="box">
-<i class="fa-solid fa-users"></i>
+<div class="box"><i class="fa-solid fa-users"></i>
 <div>Team Count</div>
-<div id="teamCount" class="value">0</div>
-</div>
+<div id="teamCount" class="value">0</div></div>
 
 </div>
 
@@ -175,7 +155,6 @@ border-top:1px solid #222;text-align:center;
 </button>
 </div>
 
-<!-- BUTTONS -->
 <button class="btn" onclick="openDownline()">
 <i class="fa-solid fa-sitemap"></i> View Downline
 </button>
@@ -184,16 +163,25 @@ border-top:1px solid #222;text-align:center;
 <i class="fa-solid fa-clock"></i> Claim History
 </button>
 
-<!-- DOWNLINE POPUP -->
+<!-- ADMIN PANEL -->
+<div id="adminPanel" style="display:none">
+<div class="card">
+<h3><i class="fa-solid fa-user-shield"></i> Admin Panel</h3>
+<button class="btn">Total Users</button>
+<button class="btn">Total Staked</button>
+<button class="btn">Reward Pool</button>
+</div>
+</div>
+
+<!-- POPUPS -->
 <div class="popup" id="downlinePopup">
 <div class="popupBox">
-<h3>Team Downline</h3>
+<h3>20 Level Downline</h3>
 <div id="downlineData"></div>
 <button class="btn" onclick="closePopup()">Close</button>
 </div>
 </div>
 
-<!-- HISTORY POPUP -->
 <div class="popup" id="historyPopup">
 <div class="popupBox">
 <h3>Claim History</h3>
@@ -211,10 +199,10 @@ border-top:1px solid #222;text-align:center;
 
 let provider, signer;
 
-// 🔴 FUTURE: replace only these
-const STAKING_ADDRESS = "0x0000000000000000000000000000000000000000";
-const DX_TOKEN = "0x0000000000000000000000000000000000000000";
-const USDT = "0x55d398326f99059fF775485246999027B3197955";
+// 🔴 CHANGE LATER ONLY
+const STAKING_ADDRESS="0x0000000000000000000000000000000000000000";
+const DX_TOKEN="0x0000000000000000000000000000000000000000";
+const ADMIN="0x53ba2d865be750d0e2d4d01bcb0a46ec1684c46b";
 
 function toggleStake(){
 let b=document.getElementById("stakeBox");
@@ -232,8 +220,7 @@ document.getElementById("downlinePopup").style.display="flex";
 let html="";
 for(let i=1;i<=20;i++){
 html+=`
-<div style="display:flex;justify-content:space-between;
-background:#000;padding:10px;margin:6px 0;border-radius:8px;border:1px solid #222;">
+<div style="display:flex;justify-content:space-between;background:#000;padding:10px;margin:6px;border-radius:8px;border:1px solid #222;">
 <span>Level ${i}</span>
 <span>0</span>
 </div>`;
@@ -257,14 +244,14 @@ try{
 let providerInstance;
 
 if(window.ethereum){
-providerInstance = new ethers.providers.Web3Provider(window.ethereum);
-await providerInstance.send("eth_requestAccounts", []);
+providerInstance=new ethers.providers.Web3Provider(window.ethereum);
+await providerInstance.send("eth_requestAccounts",[]);
 }else{
-const wc = await window.EthereumProvider.init({
+const wc=await window.EthereumProvider.init({
 projectId:"62a73933d62534edcd2f54b8a06c4319",
 chains:[56],
 showQrModal:true,
-metadata:{name:"DimeX",description:"DimeX",url:window.location.origin,
+metadata:{name:"DimeX",url:window.location.origin,
 icons:["https://i.ibb.co/zVB8fHMD/logo.png"]}
 });
 await wc.enable();
@@ -281,6 +268,11 @@ document.getElementById("refInput").value=
 window.location.origin+"?ref="+addr;
 
 document.getElementById("status").innerHTML="Wallet Connected";
+
+// ADMIN CHECK
+if(addr.toLowerCase()==ADMIN.toLowerCase()){
+document.getElementById("adminPanel").style.display="block";
+}
 
 loadData();
 setInterval(loadData,10000);
