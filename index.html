@@ -7,31 +7,33 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
 
 <style>
 body{
 margin:0;
 font-family:Poppins;
-background:#000;
+background:#0b0e11;
 color:#fff;
 }
 
-.header{
+.topbar{
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:18px 25px;
-background:#0b0b0b;
-border-bottom:1px solid #222;
+padding:20px;
+background:#11161c;
+border-bottom:1px solid #1f2933;
 }
 
 .logo{
 color:gold;
 font-size:22px;
+font-weight:600;
 }
 
-.btn{
+.connectBtn{
 background:gold;
 border:none;
 padding:10px 18px;
@@ -40,143 +42,119 @@ font-weight:bold;
 cursor:pointer;
 }
 
-.grid{
+.container{
+padding:25px;
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-gap:15px;
-padding:20px;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:20px;
 }
 
 .card{
-background:#111;
-padding:18px;
+background:#11161c;
+border:1px solid #1f2933;
 border-radius:12px;
-border:1px solid #222;
-box-shadow:0 0 20px rgba(255,215,0,0.08);
+padding:18px;
 }
 
-.card h4{
-margin:0;
-color:#aaa;
-font-size:13px;
-}
-
-.value{
-font-size:20px;
-margin-top:6px;
-color:#fff;
-}
-
-.card i{
+.card h3{
+margin:0 0 10px 0;
 color:gold;
-margin-right:6px;
+font-size:16px;
 }
 
-.section{
-padding:20px;
-margin:20px;
-background:#0b0b0b;
-border-radius:14px;
-border:1px solid #222;
+.stat{
+display:flex;
+justify-content:space-between;
+margin:6px 0;
+font-size:14px;
 }
 
-input,select{
-width:100%;
-padding:12px;
+.big{
+font-size:22px;
+color:gold;
 margin-top:10px;
-background:#000;
-border:1px solid #333;
-color:#fff;
-border-radius:8px;
 }
 
-table{
+.input, select{
+width:100%;
+padding:10px;
+margin-top:8px;
+background:#0b0e11;
+border:1px solid #2b3139;
+color:#fff;
+border-radius:6px;
+}
+
+.btn{
+width:100%;
+padding:10px;
+margin-top:10px;
+border:none;
+border-radius:6px;
+font-weight:600;
+cursor:pointer;
+}
+
+.primary{
+background:gold;
+}
+
+.secondary{
+background:#2b3139;
+color:#fff;
+}
+
+.level-table{
 width:100%;
 border-collapse:collapse;
-margin-top:15px;
+margin-top:10px;
 }
 
-th,td{
-border:1px solid #333;
-padding:8px;
-text-align:center;
-}
-
-th{
-color:gold;
+.level-table td{
+border-bottom:1px solid #1f2933;
+padding:6px;
+font-size:13px;
 }
 
 .admin{
 display:none;
-background:#070707;
-padding:20px;
-border-top:1px solid #222;
+margin-top:20px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">
+<div class="topbar">
 <div class="logo"><i class="fa-solid fa-coins"></i> DimeX</div>
-<button class="btn" onclick="connectWallet()"><i class="fa-solid fa-wallet"></i> Connect</button>
+<button class="connectBtn" onclick="connectWallet()">
+<i class="fa-solid fa-wallet"></i> Connect Wallet
+</button>
 </div>
 
-<!-- ===== STATS ===== -->
-<div class="grid">
+<div class="container">
 
+<!-- OVERVIEW -->
 <div class="card">
-<h4><i class="fa-solid fa-database"></i> Total Stake</h4>
-<div class="value">0</div>
+<h3><i class="fa-solid fa-chart-line"></i> Overview</h3>
+<div class="stat"><span>Total Staked</span><span>0</span></div>
+<div class="stat"><span>Daily Reward</span><span>0</span></div>
+<div class="stat"><span>Total Earned</span><span>0</span></div>
+<div class="stat"><span>Direct Income</span><span>0</span></div>
+<div class="stat"><span>Level Bonus</span><span>0</span></div>
+<div class="stat"><span>Claimable</span><span>0</span></div>
+<div class="stat"><span>Direct Count</span><span>0</span></div>
+<div class="stat"><span>Team Count</span><span>0</span></div>
 </div>
 
+<!-- STAKE PANEL -->
 <div class="card">
-<h4><i class="fa-solid fa-gift"></i> Daily Rewards</h4>
-<div class="value">0 DMX</div>
-</div>
-
-<div class="card">
-<h4><i class="fa-solid fa-chart-line"></i> Total Earnings</h4>
-<div class="value">0 DMX</div>
-</div>
-
-<div class="card">
-<h4><i class="fa-solid fa-user-plus"></i> Direct Bonus</h4>
-<div class="value">0 DMX</div>
-</div>
-
-<div class="card">
-<h4><i class="fa-solid fa-layer-group"></i> Level Bonus</h4>
-<div class="value">0 DMX</div>
-</div>
-
-<div class="card">
-<h4><i class="fa-solid fa-users"></i> Direct Count</h4>
-<div class="value">0</div>
-</div>
-
-<div class="card">
-<h4><i class="fa-solid fa-network-wired"></i> Team Count</h4>
-<div class="value">0</div>
-</div>
-
-<div class="card">
-<h4><i class="fa-solid fa-hand-holding-dollar"></i> Claimable</h4>
-<div class="value">0 DMX</div>
-</div>
-
-</div>
-
-<!-- ===== STAKE ===== -->
-<div class="section">
-<h3 style="color:gold"><i class="fa-solid fa-arrow-up-from-bracket"></i> Stake</h3>
+<h3><i class="fa-solid fa-arrow-up"></i> Stake</h3>
 
 <select>
-<option>USDT</option>
 <option>DMX</option>
+<option>USDT</option>
 </select>
-
-<input placeholder="Enter amount">
 
 <select>
 <option>90 Days (0.20%)</option>
@@ -184,71 +162,74 @@ border-top:1px solid #222;
 <option>365 Days (0.30%)</option>
 </select>
 
-<button class="btn"><i class="fa-solid fa-circle-check"></i> Stake</button>
-<button class="btn"><i class="fa-solid fa-hand-holding-dollar"></i> Claim</button>
+<input class="input" placeholder="Enter amount">
+
+<button class="btn secondary">Approve</button>
+<button class="btn primary">Stake</button>
+
+<div class="stat"><span>Staked Amount</span><span>0</span></div>
 </div>
 
-<!-- ===== REFERRAL ===== -->
-<div class="section">
-<h3 style="color:gold"><i class="fa-solid fa-link"></i> Referral</h3>
-<input value="https://dimex.app/?ref=USER" readonly>
-<button class="btn"><i class="fa-solid fa-copy"></i> Copy Link</button>
+<!-- CLAIM PANEL -->
+<div class="card">
+<h3><i class="fa-solid fa-gift"></i> Rewards</h3>
+
+<div class="big">0 DMX</div>
+
+<button class="btn primary">Claim</button>
+<button class="btn secondary">Restake</button>
+
+<div class="stat"><span>Claim History</span><span>0 entries</span></div>
 </div>
 
-<!-- ===== LEVEL STRUCTURE ===== -->
-<div class="section">
-<h3 style="color:gold"><i class="fa-solid fa-sitemap"></i> 20 Level Structure</h3>
-<table>
-<tr><th>Level</th><th>Bonus %</th></tr>
-<tr><td>1</td><td>30%</td></tr>
-<tr><td>2</td><td>15%</td></tr>
-<tr><td>3</td><td>10%</td></tr>
-<tr><td>4</td><td>5%</td></tr>
-<tr><td>5</td><td>3%</td></tr>
-<tr><td>6</td><td>2%</td></tr>
-<tr><td>7-10</td><td>1%</td></tr>
-<tr><td>11-15</td><td>0.5%</td></tr>
-<tr><td>16-20</td><td>0.25%</td></tr>
+<!-- REFERRAL -->
+<div class="card">
+<h3><i class="fa-solid fa-link"></i> Referral</h3>
+
+<input class="input" value="https://dimex.app/?ref=YOURWALLET" readonly>
+<button class="btn secondary">Copy Link</button>
+</div>
+
+<!-- LEVEL STRUCTURE -->
+<div class="card">
+<h3><i class="fa-solid fa-network-wired"></i> 20 Level Bonus</h3>
+
+<table class="level-table">
+<tr><td>Level 1</td><td>30%</td></tr>
+<tr><td>Level 2</td><td>15%</td></tr>
+<tr><td>Level 3</td><td>10%</td></tr>
+<tr><td>Level 4</td><td>5%</td></tr>
+<tr><td>Level 5</td><td>3%</td></tr>
+<tr><td>Level 6</td><td>2%</td></tr>
+<tr><td>Level 7-10</td><td>1%</td></tr>
+<tr><td>Level 11-15</td><td>0.5%</td></tr>
+<tr><td>Level 16-20</td><td>0.25%</td></tr>
 </table>
 </div>
 
-<!-- ===== DOWNLINE ===== -->
-<div class="section">
-<h3 style="color:gold"><i class="fa-solid fa-diagram-project"></i> Downline</h3>
-<table>
-<tr><th>Wallet</th><th>Level</th></tr>
-<tr><td>-</td><td>-</td></tr>
-</table>
+<!-- ADMIN PANEL -->
+<div class="card admin" id="adminPanel">
+<h3><i class="fa-solid fa-shield-halved"></i> Admin Panel</h3>
+<div class="stat"><span>Total Platform Stake</span><span>0</span></div>
+<div class="stat"><span>Total Users</span><span>0</span></div>
+<button class="btn secondary">Add Reward</button>
+<button class="btn secondary">Withdraw</button>
 </div>
 
-<!-- ===== HISTORY ===== -->
-<div class="section">
-<h3 style="color:gold"><i class="fa-solid fa-clock-rotate-left"></i> Claim History</h3>
-<table>
-<tr><th>Date</th><th>Amount</th></tr>
-<tr><td>-</td><td>-</td></tr>
-</table>
-</div>
-
-<!-- ===== ADMIN PANEL ===== -->
-<div class="admin" id="adminPanel">
-<h3 style="color:gold"><i class="fa-solid fa-shield-halved"></i> Admin Panel</h3>
-<button class="btn"><i class="fa-solid fa-plus"></i> Add Reward</button>
-<button class="btn"><i class="fa-solid fa-money-bill-transfer"></i> Withdraw USDT</button>
 </div>
 
 <script>
-let adminWallet="0x53ba2d865be750d0e2d4d01bcb0a46ec1684c46b";
+const adminWallet = "0x53ba2d865be750d0e2d4d01bcb0a46ec1684c46b";
 
 async function connectWallet(){
-if(!window.ethereum) return alert("Install Wallet");
+if(!window.ethereum) return alert("Install wallet");
 
-const provider=new ethers.providers.Web3Provider(window.ethereum);
-await provider.send("eth_requestAccounts",[]);
-const signer=provider.getSigner();
-const user=await signer.getAddress();
+const provider = new ethers.providers.Web3Provider(window.ethereum);
+await provider.send("eth_requestAccounts", []);
+const signer = provider.getSigner();
+const address = await signer.getAddress();
 
-if(user.toLowerCase()==adminWallet.toLowerCase()){
+if(address.toLowerCase() === adminWallet.toLowerCase()){
 document.getElementById("adminPanel").style.display="block";
 }
 }
